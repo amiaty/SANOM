@@ -7,11 +7,6 @@ import eu.sealsproject.platform.res.tool.api.ToolException;
 import eu.sealsproject.platform.res.tool.api.ToolType;
 import eu.sealsproject.platform.res.tool.impl.AbstractPlugin;
 import fr.inrialpes.exmo.align.impl.renderer.RDFRendererVisitor;
-import fr.inrialpes.exmo.ontowrap.HeavyLoadedOntology;
-import fr.inrialpes.exmo.ontowrap.Ontology;
-import fr.inrialpes.exmo.ontowrap.OntologyFactory;
-import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3Ontology;
-import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentVisitor;
 
@@ -34,7 +29,9 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 		SANOM matcher = new SANOM();
 		try {
 			matcher.init(source.toURI(), target.toURI());
+            matcher.initSANOM(source.toURI(), target.toURI());
 			Properties properties = new Properties();
+
 			matcher.align(null, properties);
             try {
                 File alignmentFile = File.createTempFile("alignment", ".rdf");
@@ -77,20 +74,17 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 	public ToolType getType() {
 		return ToolType.OntologyMatchingTool;
 	}
-
+/*
 	public static void main(String[] args)
 	{
         try {
-            //file://C:/Users/Amir/Documents/MyFiles/Programming/Proje/SANOM_2017/data/anatomy/mouse.owl
             URI uri1 = new URI("file:./res/anatomy/mouse.owl");
             URI uri2 = new URI("file:./res/anatomy/human.owl");
 
             SANOM matcher = new SANOM();
             //Properties properties = new Properties();
-            //matcher.init(uri1, uri2);
-            OntologyFactory.setDefaultFactory("fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory");
-            Ontology ontology = OntologyFactory.getFactory().loadOntology(uri1);
-            HeavyLoadedOntology onto = (HeavyLoadedOntology)ontology;
+            matcher.init(uri1, uri2);
+			matcher.initSANOM(uri1, uri2);
             matcher.align( null, System.getProperties());
 			File alignmentFile = File.createTempFile("alignment", ".rdf");
 			FileWriter fw = new FileWriter(alignmentFile);
@@ -99,9 +93,10 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 			matcher.render(rendererVisitor);
 			fw.flush();
 			fw.close();
+            System.out.println(alignmentFile.toURI().toURL());
         } catch (Exception e) {
             e.printStackTrace();
         }
 	}
-
+*/
 }

@@ -10,6 +10,12 @@ import fr.inrialpes.exmo.align.impl.DistanceAlignment;
 import fr.inrialpes.exmo.align.impl.URIAlignment;
 import fr.inrialpes.exmo.ontosim.string.JWNLDistances;
 import fr.inrialpes.exmo.ontowrap.HeavyLoadedOntology;
+import fr.inrialpes.exmo.ontowrap.Ontology;
+import fr.inrialpes.exmo.ontowrap.OntologyFactory;
+import fr.inrialpes.exmo.ontowrap.OntowrapException;
+import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3Ontology;
+import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory;
+
 import info.debatty.java.stringsimilarity.*;
 import info.debatty.java.stringsimilarity.interfaces.NormalizedStringDistance;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
@@ -25,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplNoCompression;
 
+import java.net.URI;
 import java.util.*;
 
 @SuppressWarnings("Duplicates")
@@ -38,19 +45,34 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
         setType("**");
     }
 
-    public void init(Object o1, Object o2, Object ontologies) throws AlignmentException {
-        super.init(o1, o2, ontologies);
-        if (!(getOntologyObject1() instanceof HeavyLoadedOntology && getOntologyObject2() instanceof HeavyLoadedOntology))
-            throw new AlignmentException("SANOM requires HeavyLoadedOntology ontology loader");
+    public void init(Object o1, Object o2) throws AlignmentException {
+        super.init(o1, o2);
+    }
+    public void initSANOM(URI o1, URI o2) {
+        OntologyFactory.setDefaultFactory("fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory");
+        Ontology ontology = null;
+        try {
+            ontology = OntologyFactory.getFactory().loadOntology(o1);
+            heavyOntology1 = (HeavyLoadedOntology<Object>)ontology;
+            ontology = OntologyFactory.getFactory().loadOntology(o2);
+            heavyOntology2 = (HeavyLoadedOntology<Object>)ontology;
+            /*
+            this.setOntology1(heavyOntology1);
+            this.setOntology2(heavyOntology2);
+            this.setFile1(o1);
+            this.setFile2(o2);
+            */
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void align(Alignment alignment, Properties param) throws AlignmentException {
         try {
             //JWNLDistances Dist = new JWNLDistances();
             //Dist.Initialize("./dict", "3.1");
-            this.init(getOntology1(), getOntology2());
-            heavyOntology1 = (HeavyLoadedOntology<Object>) this.getOntologyObject1();
-            heavyOntology2 = (HeavyLoadedOntology<Object>) this.getOntologyObject2();
+            //heavyOntology1 = (HeavyLoadedOntology<Object>) this.getOntologyObject1();
+            //heavyOntology2 = (HeavyLoadedOntology<Object>) this.getOntologyObject2();
 
             String p1 = param.getProperty("ObjType", "class");
             int nbEntities1;
@@ -104,12 +126,13 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
             for (OWLObject ob : entity1o) {
                 Set<String> names = new HashSet<>();
-                for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology) getOntology1()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
+
+                for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology)heavyOntology1.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
                         str1 = ((OWLLiteralImplNoCompression) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) getOntology1()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) heavyOntology1.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
                 }
@@ -118,12 +141,12 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
             for (OWLObject ob : entity2o) {
                 Set<String> names = new HashSet<>();
-                for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology) getOntology2()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
+                for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
                         str1 = ((OWLLiteralImplNoCompression) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) getOntology2()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
                 }
@@ -206,9 +229,9 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             }
 
             System.out.println("\nRunning SA:");
-            double threshold = 0.0;
+            double threshold = 0.1;
             SimulatedAnnealing SA = new SimulatedAnnealing(matrix, matSup);
-            SA.solve(10);
+            SA.solve(50);
             List<Pair<Integer, Integer>> result = SA.getSolution();
             System.out.println("\nSA finished.");
             for (Pair<Integer, Integer> item : result)

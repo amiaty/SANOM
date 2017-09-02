@@ -12,7 +12,7 @@ public class SimulatedAnnealing {
     private double[][] similaritySup;
     private List<Integer> sol;
     private int row, col, cntGoods = 0;
-    private double threshold = 0.80;
+    private double threshold = 0.50;
 
     private Random random;
 
@@ -26,7 +26,7 @@ public class SimulatedAnnealing {
         random = new Random(0);
     }
     public void solve(int duration) {
-        double deltaE, temperature = 1.0, alpha = 0.999;
+        double deltaE, temperature = 1.0, alpha = 0.995;
         sol = generateInitSol();
         List<Integer> next, curr, best;
         curr = best = sol;
@@ -34,7 +34,7 @@ public class SimulatedAnnealing {
         for (int t = 0; t < duration; ++t){
             curr = best;
             fitCurr = fitBest;
-            for (int i = 0; i < 50; ++i) {
+            for (int i = 0; i < 30; ++i) {
                 next = successor(curr);
                 fitNext = getFitness(next);
                 deltaE = fitNext - fitCurr;
@@ -61,7 +61,7 @@ public class SimulatedAnnealing {
         return extractSolutionFinal(sol);
     }
     private List<Integer> successor(final List<Integer> curr) {
-        int batchSz = Math.min(100, (row / 2) * 2);
+        int batchSz = Math.min(4, (row / 2) * 2);
         int[] randInx = random.ints(cntGoods, row).distinct().limit(batchSz).toArray();
         List<Integer> next = new ArrayList<>(curr);
         for (int i = 0; i < batchSz; i += 2)
