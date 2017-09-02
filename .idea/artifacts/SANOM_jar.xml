@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="SANOM:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SANOM_jar</output-path>
+    <root id="root">
+      <element id="archive" name="SANOM.jar">
+        <element id="module-output" name="SANOM" />
+      </element>
+      <element id="library" level="application" name="align-4_9" />
+    </root>
+  </artifact>
+</component>
