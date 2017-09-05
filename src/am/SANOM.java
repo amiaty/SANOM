@@ -231,7 +231,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             System.out.println("\nRunning SA:");
             double threshold = 0.1;
             SimulatedAnnealing SA = new SimulatedAnnealing(matrix, matSup);
-            SA.solve(50);
+            SA.solve(10);
             List<Pair<Integer, Integer>> result = SA.getSolution();
             System.out.println("\nSA finished.");
             for (Pair<Integer, Integer> item : result)

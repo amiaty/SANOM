@@ -4,10 +4,7 @@
     <root id="root">
       <element id="archive" name="SANOM_Bridge.jar">
         <element id="module-output" name="SANOM_Bridge" />
-        <element id="module-output" name="SANOM" />
       </element>
-      <element id="library" level="application" name="seals-omt-client" />
-      <element id="library" level="application" name="align-4_9" />
     </root>
   </artifact>
 </component>

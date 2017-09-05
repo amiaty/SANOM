@@ -8,7 +8,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="SANOM" />
     <orderEntry type="library" name="seals-omt-client" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../out/artifacts/SANOM_jar/SANOM.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="align-4_9" level="application" />
+    <orderEntry type="library" name="java-string-similarity-0.24" level="application" />
   </component>
 </module>

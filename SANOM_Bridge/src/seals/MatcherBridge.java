@@ -74,7 +74,7 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 	public ToolType getType() {
 		return ToolType.OntologyMatchingTool;
 	}
-/*
+
 	public static void main(String[] args)
 	{
         try {
@@ -98,5 +98,4 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
             e.printStackTrace();
         }
 	}
-*/
 }
