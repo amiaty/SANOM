@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2017.
+ *    * Unauthorized copying of this file  (MatcherBridge.java), via any medium is strictly prohibited
+ *    * Proprietary and confidential
+ *    * Written by :
+ * 		Amir Ahooye Atashin - FUM <amir.atashin@mail.um.ac.ir>
+ * 		Majeed Mohammadi - TBM <M.Mohammadi@tudelft.nl>
+ *
+ * 																						Last modified: 2017 - 9 - 6
+ *
+ */
+
 package seals;
 
 import am.SANOM;

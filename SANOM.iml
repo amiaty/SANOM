@@ -9,6 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="java-string-similarity-0.24" level="application" />
-    <orderEntry type="library" name="align-4_9" level="application" />
+    <orderEntry type="library" name="align-4_1" level="application" />
   </component>
 </module>

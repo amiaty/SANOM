@@ -1,18 +1,27 @@
+/*
+ * Copyright (c) 2017.
+ *    * Unauthorized copying of this file  (SimulatedAnnealing.java), via any medium is strictly prohibited
+ *    * Proprietary and confidential
+ *    * Written by :
+ * 		Amir Ahooye Atashin - FUM <amir.atashin@mail.um.ac.ir>
+ * 		Majeed Mohammadi - TBM <M.Mohammadi@tudelft.nl>
+ *
+ * 																						Last modified: 2017 - 9 - 6
+ *
+ */
+
 package am;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Amir on 06/03/2017.
- */
 @SuppressWarnings("Duplicates")
 public class SimulatedAnnealing {
     private double[][] similarity;
     private double[][] similaritySup;
     private List<Integer> sol;
     private int row, col, cntGoods = 0;
-    private double threshold = 0.50;
+    private double threshold = 0.80;
 
     private Random random;
 
@@ -34,7 +43,7 @@ public class SimulatedAnnealing {
         for (int t = 0; t < duration; ++t){
             curr = best;
             fitCurr = fitBest;
-            for (int i = 0; i < 30; ++i) {
+            for (int i = 0; i < 50; ++i) {
                 next = successor(curr);
                 fitNext = getFitness(next);
                 deltaE = fitNext - fitCurr;
@@ -77,13 +86,15 @@ public class SimulatedAnnealing {
                 sum1 += simVal;
                 continue;
             }
-            double simValSup = similaritySup[item.getL()][item.getR()];
-            if (simVal > 0.6 && simValSup >= 1.0) {
-                sum2 += simVal;
-                continue;
+            if(similaritySup.length > 0) {
+                double simValSup = similaritySup[item.getL()][item.getR()];
+                if (simVal > 0.6 && simValSup >= 1.0) {
+                    sum2 += simVal;
+                    continue;
+                }
+                if (simVal > 0.65 && simValSup >= 0.8)
+                    sum2 += simVal;
             }
-            if (simVal > 0.65 && simValSup >= 0.8)
-                sum2 += simVal;
         }
         return sum1 * 200 + sum2 * 10;
     }
@@ -126,13 +137,15 @@ public class SimulatedAnnealing {
                 res.add(item);
                 continue;
             }
-            double simValSup = similaritySup[item.getL()][item.getR()];
-            if (simVal > 0.6 && simValSup >= 1.0) {
-                res.add(item);
-                continue;
+            if(similaritySup.length > 0) {
+                double simValSup = similaritySup[item.getL()][item.getR()];
+                if (simVal > 0.6 && simValSup >= 1.0) {
+                    res.add(item);
+                    continue;
+                }
+                if (simVal > 0.65 && simValSup >= 0.8)
+                    res.add(item);
             }
-            if (simVal > 0.65 && simValSup >= 0.8)
-                res.add(item);
         }
         return res;
     }

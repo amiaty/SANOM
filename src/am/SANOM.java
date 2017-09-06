@@ -1,8 +1,13 @@
 /*
-    File: SANOM.java
-    Copyright (C) Amir Ahooye Atashin, Ferdowsi Univerity of Mashhad, 2017 (1395-1396 Hijri-Shamsi)
-    Authors:    Amir Ahooye Atashin,
-                Majid Mohammadi
+ * Copyright (c) 2017.
+ *    * Unauthorized copying of this file  (SANOM.java), via any medium is strictly prohibited
+ *    * Proprietary and confidential
+ *    * Written by :
+ * 		Amir Ahooye Atashin - FUM <amir.atashin@mail.um.ac.ir>
+ * 		Majeed Mohammadi - TBM <M.Mohammadi@tudelft.nl>
+ *
+ * 																						Last modified: 2017 - 9 - 6
+ *
  */
 package am;
 
@@ -29,7 +34,7 @@ import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplNoCompression;
+import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImpl;
 
 import java.net.URI;
 import java.util.*;
@@ -129,12 +134,16 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
                 for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology)heavyOntology1.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
-                        str1 = ((OWLLiteralImplNoCompression) ob1.getValue()).getLiteral();
+                        str1 = ((OWLLiteralImpl) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) heavyOntology1.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteralImpl) (((OWLOntology) heavyOntology1.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
+                }
+                if (names.size() <= 0) {
+                    str1 = ob.getClassesInSignature().iterator().next().getIRI().toString();
+                    names.add(str1.replaceAll("_", " ").toLowerCase());
                 }
                 entity1ss.add(names);
             }
@@ -143,12 +152,16 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                 Set<String> names = new HashSet<>();
                 for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
-                        str1 = ((OWLLiteralImplNoCompression) ob1.getValue()).getLiteral();
+                        str1 = ((OWLLiteralImpl) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImplNoCompression) (((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteralImpl) (((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
+                }
+                if (names.size() <= 0) {
+                    str1 = ob.getClassesInSignature().iterator().next().getIRI().toString();
+                    names.add(str1.replaceAll("_", " ").toLowerCase());
                 }
                 entity2ss.add(names);
             }
@@ -231,7 +244,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             System.out.println("\nRunning SA:");
             double threshold = 0.1;
             SimulatedAnnealing SA = new SimulatedAnnealing(matrix, matSup);
-            SA.solve(10);
+            SA.solve(5);
             List<Pair<Integer, Integer>> result = SA.getSolution();
             System.out.println("\nSA finished.");
             for (Pair<Integer, Integer> item : result)

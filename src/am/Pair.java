@@ -1,8 +1,17 @@
+/*
+ * Copyright (c) 2017.
+ *    * Unauthorized copying of this file  (Pair.java), via any medium is strictly prohibited
+ *    * Proprietary and confidential
+ *    * Written by :
+ * 		Amir Ahooye Atashin - FUM <amir.atashin@mail.um.ac.ir>
+ * 		Majeed Mohammadi - TBM <M.Mohammadi@tudelft.nl>
+ *
+ * 																						Last modified: 2017 - 9 - 6
+ *
+ */
+
 package am;
 
-/**
- * Created by Amir on 05/03/2017.
- */
 public class Pair<L,R> {
     private L l;
     private R r;
