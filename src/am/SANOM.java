@@ -10,9 +10,8 @@
  *
  */
 package am;
-
+import static am.StringUtilsAM.*;
 import fr.inrialpes.exmo.align.impl.DistanceAlignment;
-import fr.inrialpes.exmo.align.impl.URIAlignment;
 import fr.inrialpes.exmo.ontosim.string.JWNLDistances;
 import fr.inrialpes.exmo.ontowrap.HeavyLoadedOntology;
 import fr.inrialpes.exmo.ontowrap.Ontology;
@@ -61,12 +60,6 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             heavyOntology1 = (HeavyLoadedOntology<Object>)ontology;
             ontology = OntologyFactory.getFactory().loadOntology(o2);
             heavyOntology2 = (HeavyLoadedOntology<Object>)ontology;
-            /*
-            this.setOntology1(heavyOntology1);
-            this.setOntology2(heavyOntology2);
-            this.setFile1(o1);
-            this.setFile2(o2);
-            */
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,8 +69,6 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
         try {
             //JWNLDistances Dist = new JWNLDistances();
             //Dist.Initialize("./dict", "3.1");
-            //heavyOntology1 = (HeavyLoadedOntology<Object>) this.getOntologyObject1();
-            //heavyOntology2 = (HeavyLoadedOntology<Object>) this.getOntologyObject2();
 
             String p1 = param.getProperty("ObjType", "class");
             int nbEntities1;
@@ -184,8 +175,14 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                 for (j = 0; j < nbEntities2; ++j) {
                     m = 0;
                     for (String s1 : entity1ss.get(i))
-                        for (String s2 : entity2ss.get(j))
-                            for (NormalizedStringDistance algo : algos) m = Math.max(m, 1.0 - algo.distance(s1, s2));
+                        for (String s2 : entity2ss.get(j)) {
+                            for (NormalizedStringDistance algo : algos) {
+                                m = Math.max(m, 1.0 - algo.distance(s1, s2));
+                            }
+                            if (StringUtilsAM.ContrainNumber(s1) && StringUtilsAM.ContrainNumber(s2)){
+                                m = Math.max(m, StringUtilsAM.StringSetSimilarity(s1, s2));
+                            }
+                        }
                     matrix[i][j] = m;
                 }
                 System.out.print(String.format("\r%d%% completed!", (int) (ii + step)));
@@ -242,9 +239,9 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             }
 
             System.out.println("\nRunning SA:");
-            double threshold = 0.1;
+            double threshold = 0.0;
             SimulatedAnnealing SA = new SimulatedAnnealing(matrix, matSup);
-            SA.solve(5);
+            SA.solve(500);
             List<Pair<Integer, Integer>> result = SA.getSolution();
             System.out.println("\nSA finished.");
             for (Pair<Integer, Integer> item : result)

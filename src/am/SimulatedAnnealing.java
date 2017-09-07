@@ -21,7 +21,7 @@ public class SimulatedAnnealing {
     private double[][] similaritySup;
     private List<Integer> sol;
     private int row, col, cntGoods = 0;
-    private double threshold = 0.80;
+    private double thresholdGoods = 0.73;
 
     private Random random;
 
@@ -35,7 +35,7 @@ public class SimulatedAnnealing {
         random = new Random(0);
     }
     public void solve(int duration) {
-        double deltaE, temperature = 1.0, alpha = 0.995;
+        double deltaE, temperature = 1.0, alpha = 0.997;
         sol = generateInitSol();
         List<Integer> next, curr, best;
         curr = best = sol;
@@ -60,7 +60,7 @@ public class SimulatedAnnealing {
                     best = curr;
                 }
             }
-            temperature = (temperature > 0.00001) ? (temperature * alpha) : 0.00001;
+            temperature = (temperature > 0.0001) ? (temperature * alpha) : 0.0001;
             System.out.print("\n" + (t + 1) + "\t: " + fitBest);
         }
         System.out.println("\n" + "Final temperature : " + temperature);
@@ -78,22 +78,22 @@ public class SimulatedAnnealing {
         return next;
     }
     private double getFitness(final List<Integer> S) {
-        double sum1 = 0, sum2 = 0;
+        double sum1 = 0, sum2 = 0, simValSup;
         List<Pair<Integer, Integer>> SS = extractSolution(S);
         for (Pair<Integer, Integer> item: SS) {
             double simVal = similarity[item.getL()][item.getR()];
-            if(simVal > threshold) {
+            if(simVal >= thresholdGoods) {
                 sum1 += simVal;
                 continue;
             }
-            if(similaritySup.length > 0) {
-                double simValSup = similaritySup[item.getL()][item.getR()];
-                if (simVal > 0.6 && simValSup >= 1.0) {
-                    sum2 += simVal;
+            if(similaritySup != null) {
+                simValSup = similaritySup[item.getL()][item.getR()];
+                if (simVal > 0.55 && simValSup >= 1.0) {
+                    sum2 += (simValSup + simVal);
                     continue;
                 }
                 if (simVal > 0.65 && simValSup >= 0.8)
-                    sum2 += simVal;
+                    sum2 += (simValSup + simVal);
             }
         }
         return sum1 * 200 + sum2 * 10;
@@ -105,7 +105,7 @@ public class SimulatedAnnealing {
         boolean[] selected2 = new boolean[row];
         int maxInd;
         double maxVal;
-        for (double thr = 1.0; thr >= 0.8; thr -= 0.1) {
+        for (double thr = 1.0; thr >= 0.80; thr -= 0.05) {
             for (int i : randOrder) {
                 if(selected2[i]) continue;
                 maxInd = -1;
@@ -130,16 +130,16 @@ public class SimulatedAnnealing {
     private List<Pair<Integer, Integer>> extractSolutionFinal(final List<Integer> visitOrder){
         List<Pair<Integer, Integer>> SS = extractSolution(visitOrder);
         List<Pair<Integer, Integer>> res = new ArrayList<>();
-
+        double simValSup, simVal;
         for (Pair<Integer, Integer> item: SS) {
-            double simVal = similarity[item.getL()][item.getR()];
-            if(simVal >= threshold) {
+            simVal = similarity[item.getL()][item.getR()];
+            if(simVal >= thresholdGoods) {
                 res.add(item);
                 continue;
             }
-            if(similaritySup.length > 0) {
-                double simValSup = similaritySup[item.getL()][item.getR()];
-                if (simVal > 0.6 && simValSup >= 1.0) {
+            if(similaritySup != null) {
+                simValSup = similaritySup[item.getL()][item.getR()];
+                if (simVal >= 0.55 && simValSup >= 1.0) {
                     res.add(item);
                     continue;
                 }
@@ -165,7 +165,7 @@ public class SimulatedAnnealing {
                     maxVal = similarity[i][j];
                 }
             }
-            if(maxVal >= 0.0) {
+            if(maxVal >= 0.5) {
                 selected[maxInd] = true;
                 res.add(new Pair<>(i, maxInd));
             }

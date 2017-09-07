@@ -12,20 +12,23 @@
 
 package seals;
 
+import static am.StringUtilsAM.*;
 import am.SANOM;
+import com.hp.hpl.jena.sparql.util.StringUtils;
 import eu.sealsproject.platform.res.domain.omt.IOntologyMatchingToolBridge;
 import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
 import eu.sealsproject.platform.res.tool.api.ToolException;
 import eu.sealsproject.platform.res.tool.api.ToolType;
 import eu.sealsproject.platform.res.tool.impl.AbstractPlugin;
+import fr.inrialpes.exmo.align.impl.eval.PRecEvaluator;
 import fr.inrialpes.exmo.align.impl.renderer.RDFRendererVisitor;
+import fr.inrialpes.exmo.align.parser.AlignmentParser;
+import org.semanticweb.owl.align.Alignment;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentVisitor;
+import org.semanticweb.owl.align.Evaluator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -93,6 +96,8 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
             URI uri1 = new URI("file:./res/anatomy/mouse.owl");
             URI uri2 = new URI("file:./res/anatomy/human.owl");
 
+            //boolean bb = am.StringUtilsAM.ContrainNumber("S4 Vertebra");
+            //am.StringUtilsAM.StringSetDistance("s4 vertebra", "sacral vertebra 4");
             SANOM matcher = new SANOM();
             //Properties properties = new Properties();
             matcher.init(uri1, uri2);
@@ -106,8 +111,24 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 			fw.flush();
 			fw.close();
             System.out.println(alignmentFile.toURI().toURL());
+
+            // eval
+			AlignmentParser alignmentParser = new AlignmentParser(0);
+			Alignment ref = alignmentParser.parse("file:./res/anatomy/reference.rdf");
+			ref.init(uri1, uri2);
+			ref.harden(0.01);
+			Evaluator evaluator = new PRecEvaluator(ref, matcher);
+			evaluator.eval(System.getProperties());
+
+			OutputStream stream1 = System.out;
+			PrintWriter printWriter1 = new PrintWriter(new BufferedWriter(new OutputStreamWriter( stream1, "UTF-8" )),false);
+			evaluator.write(printWriter1);
+			printWriter1.flush();
+			printWriter1.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 	}
+
 }
