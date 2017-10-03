@@ -26,11 +26,8 @@ import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import org.semanticweb.owl.align.Alignment;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentProcess;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLAnnotationSubject;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImpl;
@@ -43,7 +40,6 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
     private HeavyLoadedOntology<Object> heavyOntology1;
     private HeavyLoadedOntology<Object> heavyOntology2;
-
     public SANOM() {
         heavyOntology1 = heavyOntology2 = null;
         setType("**");
@@ -53,6 +49,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
         super.init(o1, o2);
     }
     public void initSANOM(URI o1, URI o2) {
+        //dataFactory
         OntologyFactory.setDefaultFactory("fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory");
         Ontology ontology = null;
         try {
@@ -69,8 +66,8 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
         try {
             //JWNLDistances Dist = new JWNLDistances();
             //Dist.Initialize("./dict", "3.1");
-
-            String p1 = param.getProperty("ObjType", "class");
+            String p1 = param.getProperty("objType", "class");
+            int nbIter = Integer.parseInt(param.getProperty("nbIter", "2"));
             int nbEntities1;
             int nbEntities2;
             OWLObject[] entity1o;
@@ -133,7 +130,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                     }
                 }
                 if (names.size() <= 0) {
-                    str1 = ob.getClassesInSignature().iterator().next().getIRI().toString();
+                    str1 = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
                     names.add(str1.replaceAll("_", " ").toLowerCase());
                 }
                 entity1ss.add(names);
@@ -151,7 +148,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                     }
                 }
                 if (names.size() <= 0) {
-                    str1 = ob.getClassesInSignature().iterator().next().getIRI().toString();
+                    str1 = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
                     names.add(str1.replaceAll("_", " ").toLowerCase());
                 }
                 entity2ss.add(names);
@@ -168,24 +165,26 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             System.out.println("Preparing:");
 
             int i, j;
-            double ii = 0, m, step = 100.0 / nbEntities1;
+            double m, step = 100.0 / nbEntities1, ii = step;
 
             // make similarity matrix
             for (i = 0; i < nbEntities1; ++i, ii += step) {
                 for (j = 0; j < nbEntities2; ++j) {
                     m = 0;
-                    for (String s1 : entity1ss.get(i))
+                    for (String s1 : entity1ss.get(i)) {
+                        boolean s1HasNum = StringUtilsAM.ContrainNumber(s1);
                         for (String s2 : entity2ss.get(j)) {
                             for (NormalizedStringDistance algo : algos) {
                                 m = Math.max(m, 1.0 - algo.distance(s1, s2));
                             }
-                            if (StringUtilsAM.ContrainNumber(s1) && StringUtilsAM.ContrainNumber(s2)){
+                            if (s1HasNum && StringUtilsAM.ContrainNumber(s2)) {
                                 m = Math.max(m, StringUtilsAM.StringSetSimilarity(s1, s2));
                             }
                         }
+                    }
                     matrix[i][j] = m;
                 }
-                System.out.print(String.format("\r%d%% completed!", (int) (ii + step)));
+                System.out.print(String.format("\r%.0f%% completed!", ii));
             }
 
             List<Set<String>> supO1 = new ArrayList<>();
@@ -198,40 +197,50 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
 
                 for (i = 0; i < nbEntities1; ++i) {
-                    iriC1.put(((OWLClass) entity1o[i]).getIRI().toString(), i);
+                    iriC1.put(((OWLClass) entity1o[i]).getIRI().getFragment(), i);
                     Set<String> temp = new HashSet<>();
                     for (OWLObject ob : ((OWLClassImpl) entity1o[i]).getSuperClasses((OWLOntology) heavyOntology1.getOntology())) {
-                        if (ob.getClass().toString().startsWith("class"))
-                            continue;
-                        String iri = ob.getClassesInSignature().iterator().next().getIRI().toString();
-                        if (!iri.endsWith("Thing"))
-                            temp.add(iri);
+                        if (ob.getClass().toString().startsWith("class")) {
+                            String iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
+                            if (!iri.endsWith("Thing"))
+                                temp.add(iri);
+                        }
                     }
                     supO1.add(temp);
                     //subO1.add(((OWLClassImpl)entity1o[i]).getSubClasses((OWLOntology) heavyOntology1.getOntology()));
                 }
 
                 for (i = 0; i < nbEntities2; ++i) {
-                    iriC2.put(((OWLClass) entity2o[i]).getIRI().toString(), i);
+                    iriC2.put(((OWLClass) entity2o[i]).getIRI().getFragment(), i);
                     Set<String> temp = new HashSet<>();
                     for (OWLObject ob : ((OWLClassImpl) entity2o[i]).getSuperClasses((OWLOntology) heavyOntology2.getOntology())) {
-                        if (ob.getClass().toString().startsWith("class"))
-                            continue;
-                        String iri = ob.getClassesInSignature().iterator().next().getIRI().toString();
-                        if (!iri.endsWith("Thing"))
-                            temp.add(iri);
+                        if (ob.getClass().toString().startsWith("class")) {
+                            String iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
+                            if (!iri.endsWith("Thing"))
+                                temp.add(iri);
+                        }
                     }
                     supO2.add(temp);
                     //subO2.add(((OWLClassImpl)entity2o[i]).getSubClasses((OWLOntology) heavyOntology2.getOntology()));
                 }
+//                iriC1.put("Thing", -1);
+//                iriC2.put("Thing", -1);
                 double maxSim;
                 for (i = 0; i < nbEntities1; ++i) {
                     for (j = 0; j < nbEntities2; ++j) {
                         maxSim = 0.0;
                         for (String ob1 : supO1.get(i)) {
                             int ind1 = iriC1.get(ob1);
-                            for (String ob2 : supO2.get(j))
-                                maxSim = Math.max(maxSim, matrix[ind1][iriC2.get(ob2)]);
+                            if(ind1 == -1){
+                                for (String ob2 : supO2.get(j))
+                                    if(iriC2.get(ob2) == -1){
+                                        maxSim = 1; break;
+                                    }
+                            } else {
+                                for (String ob2 : supO2.get(j))
+                                    maxSim = Math.max(maxSim, matrix[ind1][iriC2.get(ob2)]);
+                            }
+                            if(maxSim == 1) break;
                         }
                         matSup[i][j] = maxSim;
                     }
@@ -241,7 +250,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             System.out.println("\nRunning SA:");
             double threshold = 0.0;
             SimulatedAnnealing SA = new SimulatedAnnealing(matrix, matSup);
-            SA.solve(500);
+            SA.solve(nbIter);
             List<Pair<Integer, Integer>> result = SA.getSolution();
             System.out.println("\nSA finished.");
             for (Pair<Integer, Integer> item : result)

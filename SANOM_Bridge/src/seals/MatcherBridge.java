@@ -46,7 +46,8 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 			matcher.init(source.toURI(), target.toURI());
             matcher.initSANOM(source.toURI(), target.toURI());
 			Properties properties = new Properties();
-
+			properties.put("objType", "class");
+			properties.put("nbIter", "100");
 			matcher.align(null, properties);
             try {
                 File alignmentFile = File.createTempFile("alignment", ".rdf");
@@ -93,16 +94,26 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 	public static void main(String[] args)
 	{
         try {
-            URI uri1 = new URI("file:./res/anatomy/mouse.owl");
-            URI uri2 = new URI("file:./res/anatomy/human.owl");
+            //URI uri1 = new URI("file:./res/anatomy/mouse.owl");
+			URI uri1 = new URI("file:./res/pheno/doid.owl");
+			//URI uri1 = new URI("file:./res/ua/Cologne.rdf");
+
+            //URI uri2 = new URI("file:./res/anatomy/human.owl");
+			URI uri2 = new URI("file:./res/pheno/ordo.owl");
+			//URI uri2 = new URI("file:./res/ua/Frankfurt.rdf");
 
             //boolean bb = am.StringUtilsAM.ContrainNumber("S4 Vertebra");
             //am.StringUtilsAM.StringSetDistance("s4 vertebra", "sacral vertebra 4");
+			Properties properties = new Properties();
+			properties.put("objType", "class");
+			properties.put("nbIter", "2");
+
             SANOM matcher = new SANOM();
-            //Properties properties = new Properties();
             matcher.init(uri1, uri2);
 			matcher.initSANOM(uri1, uri2);
-            matcher.align( null, System.getProperties());
+
+
+            matcher.align( null, properties);
 			File alignmentFile = File.createTempFile("alignment", ".rdf");
 			FileWriter fw = new FileWriter(alignmentFile);
 			PrintWriter pw = new PrintWriter(fw);
@@ -114,7 +125,9 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 
             // eval
 			AlignmentParser alignmentParser = new AlignmentParser(0);
-			Alignment ref = alignmentParser.parse("file:./res/anatomy/reference.rdf");
+			//Alignment ref = alignmentParser.parse("file:./res/anatomy/reference.rdf");
+			//Alignment ref = alignmentParser.parse("file:./res/ua/Cologne-Frankfurt.rdf");
+			Alignment ref = alignmentParser.parse("file:./res/pheno/DOID_ORDO.rdf");
 			ref.init(uri1, uri2);
 			ref.harden(0.01);
 			Evaluator evaluator = new PRecEvaluator(ref, matcher);

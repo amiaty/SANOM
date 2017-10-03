@@ -21,7 +21,7 @@ public class SimulatedAnnealing {
     private double[][] similaritySup;
     private List<Integer> sol;
     private int row, col, cntGoods = 0;
-    private double thresholdGoods = 0.73;
+    private double thresholdGoods = 0.69;
 
     private Random random;
 
@@ -35,7 +35,7 @@ public class SimulatedAnnealing {
         random = new Random(0);
     }
     public void solve(int duration) {
-        double deltaE, temperature = 1.0, alpha = 0.997;
+        double deltaE, temperature = 1.0, alpha = 0.998;
         sol = generateInitSol();
         List<Integer> next, curr, best;
         curr = best = sol;
@@ -43,7 +43,7 @@ public class SimulatedAnnealing {
         for (int t = 0; t < duration; ++t){
             curr = best;
             fitCurr = fitBest;
-            for (int i = 0; i < 50; ++i) {
+            for (int i = 0; i < 30; ++i) {
                 next = successor(curr);
                 fitNext = getFitness(next);
                 deltaE = fitNext - fitCurr;
@@ -70,7 +70,7 @@ public class SimulatedAnnealing {
         return extractSolutionFinal(sol);
     }
     private List<Integer> successor(final List<Integer> curr) {
-        int batchSz = Math.min(4, (row / 2) * 2);
+        int batchSz = Math.min(6, (row / 2) * 2);
         int[] randInx = random.ints(cntGoods, row).distinct().limit(batchSz).toArray();
         List<Integer> next = new ArrayList<>(curr);
         for (int i = 0; i < batchSz; i += 2)
@@ -92,11 +92,11 @@ public class SimulatedAnnealing {
                     sum2 += (simValSup + simVal);
                     continue;
                 }
-                if (simVal > 0.65 && simValSup >= 0.8)
+                if (simVal > 0.60 && simValSup >= 0.8)
                     sum2 += (simValSup + simVal);
             }
         }
-        return sum1 * 200 + sum2 * 10;
+        return sum1 * 200 + sum2 * 30;
     }
     private List<Integer> generateInitSol(){
         List<Integer> randOrder = random.ints(0, row).distinct().limit(row).boxed().collect(Collectors.toCollection(ArrayList::new));
@@ -105,7 +105,7 @@ public class SimulatedAnnealing {
         boolean[] selected2 = new boolean[row];
         int maxInd;
         double maxVal;
-        for (double thr = 1.0; thr >= 0.80; thr -= 0.05) {
+        for (double thr = 1.0; thr >= 0.85; thr -= 0.05) {
             for (int i : randOrder) {
                 if(selected2[i]) continue;
                 maxInd = -1;
@@ -139,11 +139,11 @@ public class SimulatedAnnealing {
             }
             if(similaritySup != null) {
                 simValSup = similaritySup[item.getL()][item.getR()];
-                if (simVal >= 0.55 && simValSup >= 1.0) {
+                if (simVal >= 0.50 && simValSup >= 1.0) {
                     res.add(item);
                     continue;
                 }
-                if (simVal > 0.65 && simValSup >= 0.8)
+                if (simVal > 0.60 && simValSup >= 0.8)
                     res.add(item);
             }
         }
@@ -165,7 +165,7 @@ public class SimulatedAnnealing {
                     maxVal = similarity[i][j];
                 }
             }
-            if(maxVal >= 0.5) {
+            if(maxVal >= 0.49) {
                 selected[maxInd] = true;
                 res.add(new Pair<>(i, maxInd));
             }
