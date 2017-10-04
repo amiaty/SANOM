@@ -9,16 +9,18 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="seals-omt-client" level="application" />
-    <orderEntry type="library" name="align-4_1" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../out/artifacts/SANOM_jar/SANOM.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../src" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="library" name="java-string-similarity-1.0.0" level="application" />
+    <orderEntry type="library" name="align-4_1" level="application" />
   </component>
 </module>

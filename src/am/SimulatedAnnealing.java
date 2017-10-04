@@ -21,7 +21,7 @@ public class SimulatedAnnealing {
     private double[][] similaritySup;
     private List<Integer> sol;
     private int row, col, cntGoods = 0;
-    private double thresholdGoods = 0.69;
+    private double thresholdGoods = 0.72;
 
     private Random random;
 
@@ -88,11 +88,11 @@ public class SimulatedAnnealing {
             }
             if(similaritySup != null) {
                 simValSup = similaritySup[item.getL()][item.getR()];
-                if (simVal > 0.55 && simValSup >= 1.0) {
+                if (simVal > 0.58 && simValSup >= 1.0) {
                     sum2 += (simValSup + simVal);
                     continue;
                 }
-                if (simVal > 0.60 && simValSup >= 0.8)
+                if (simVal > 0.62 && simValSup >= 0.8)
                     sum2 += (simValSup + simVal);
             }
         }
@@ -139,11 +139,11 @@ public class SimulatedAnnealing {
             }
             if(similaritySup != null) {
                 simValSup = similaritySup[item.getL()][item.getR()];
-                if (simVal >= 0.50 && simValSup >= 1.0) {
+                if (simVal >= 0.58 && simValSup >= 1.0) {
                     res.add(item);
                     continue;
                 }
-                if (simVal > 0.60 && simValSup >= 0.8)
+                if (simVal > 0.62 && simValSup >= 0.8)
                     res.add(item);
             }
         }

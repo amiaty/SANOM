@@ -122,10 +122,10 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
                 for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology)heavyOntology1.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
-                        str1 = ((OWLLiteralImpl) ob1.getValue()).getLiteral();
+                        str1 = ((OWLLiteral) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImpl) (((OWLOntology) heavyOntology1.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteral) (((OWLOntology) heavyOntology1.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
                 }
@@ -140,10 +140,10 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                 Set<String> names = new HashSet<>();
                 for (OWLAnnotationAssertionAxiom ob1 : ((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms(((OWLClass) ob).getIRI())) {
                     if (ob1.getProperty().isLabel()) {
-                        str1 = ((OWLLiteralImpl) ob1.getValue()).getLiteral();
+                        str1 = ((OWLLiteral) ob1.getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     } else if (ob1.getProperty().toStringID().endsWith("hasRelatedSynonym")) {
-                        str1 = ((OWLLiteralImpl) (((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
+                        str1 = ((OWLLiteral) (((OWLOntology) heavyOntology2.getOntology()).getAnnotationAssertionAxioms((OWLAnnotationSubject) ob1.getValue()).iterator().next()).getValue()).getLiteral();
                         names.add(str1.trim().replaceAll("_", " ").toLowerCase());
                     }
                 }
@@ -194,14 +194,14 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                 matSup = new double[nbEntities1][nbEntities2];
                 HashMap<String, Integer> iriC1 = new HashMap<>(nbEntities1);
                 HashMap<String, Integer> iriC2 = new HashMap<>(nbEntities2);
-
+                String iri;
 
                 for (i = 0; i < nbEntities1; ++i) {
                     iriC1.put(((OWLClass) entity1o[i]).getIRI().getFragment(), i);
                     Set<String> temp = new HashSet<>();
                     for (OWLObject ob : ((OWLClassImpl) entity1o[i]).getSuperClasses((OWLOntology) heavyOntology1.getOntology())) {
                         if (ob.getClass().toString().startsWith("class")) {
-                            String iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
+                            iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
                             if (!iri.endsWith("Thing"))
                                 temp.add(iri);
                         }
@@ -215,7 +215,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                     Set<String> temp = new HashSet<>();
                     for (OWLObject ob : ((OWLClassImpl) entity2o[i]).getSuperClasses((OWLOntology) heavyOntology2.getOntology())) {
                         if (ob.getClass().toString().startsWith("class")) {
-                            String iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
+                            iri = ob.getClassesInSignature().iterator().next().getIRI().getFragment();
                             if (!iri.endsWith("Thing"))
                                 temp.add(iri);
                         }
