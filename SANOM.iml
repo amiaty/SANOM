@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="java-string-similarity-1.0.0" level="application" />
-    <orderEntry type="library" name="align-4_1" level="application" />
+    <orderEntry type="library" name="java-string-similarity-1.0.1" level="application" />
+    <orderEntry type="library" name="align-4.1" level="application" />
   </component>
 </module>

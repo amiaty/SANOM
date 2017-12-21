@@ -72,6 +72,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
             int nbEntities2;
             OWLObject[] entity1o;
             OWLObject[] entity2o;
+            //TODO
             switch (p1) {
                 case "class":
                     nbEntities1 = heavyOntology1.nbClasses();
