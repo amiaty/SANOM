@@ -10,27 +10,18 @@
  *
  */
 package am;
-import static am.StringUtilsAM.*;
 import fr.inrialpes.exmo.align.impl.DistanceAlignment;
 import fr.inrialpes.exmo.ontosim.string.JWNLDistances;
 import fr.inrialpes.exmo.ontowrap.HeavyLoadedOntology;
 import fr.inrialpes.exmo.ontowrap.Ontology;
 import fr.inrialpes.exmo.ontowrap.OntologyFactory;
-import fr.inrialpes.exmo.ontowrap.OntowrapException;
-import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3Ontology;
-import fr.inrialpes.exmo.ontowrap.owlapi30.OWLAPI3OntologyFactory;
-
-import info.debatty.java.stringsimilarity.*;
+import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import info.debatty.java.stringsimilarity.interfaces.NormalizedStringDistance;
-import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import org.semanticweb.owl.align.Alignment;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentProcess;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImpl;
 
 import java.net.URI;
 import java.util.*;
@@ -40,6 +31,7 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
     private HeavyLoadedOntology<Object> heavyOntology1;
     private HeavyLoadedOntology<Object> heavyOntology2;
+    private JWNLDistances jDist = null;
     public SANOM() {
         heavyOntology1 = heavyOntology2 = null;
         setType("**");
@@ -64,10 +56,9 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
 
     public void align(Alignment alignment, Properties param) throws AlignmentException {
         try {
-            //JWNLDistances Dist = new JWNLDistances();
-            //Dist.Initialize("./dict", "3.1");
             String p1 = param.getProperty("objType", "class");
             int nbIter = Integer.parseInt(param.getProperty("nbIter", "2"));
+            int useWordNet = Integer.parseInt(param.getProperty("useWordNet", "0"));
             int nbEntities1;
             int nbEntities2;
             OWLObject[] entity1o;
@@ -112,11 +103,15 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                     break;
             }
 
+            if (useWordNet == 1){
+                jDist = new JWNLDistances();
+                jDist.Initialize("./dict", "2.1");
+            }
+
             double[][] matrix = new double[nbEntities1][nbEntities2];
             List<Set<String>> entity1ss = new ArrayList<>(nbEntities1);
             List<Set<String>> entity2ss = new ArrayList<>(nbEntities1);
             String str1;
-
 
             for (OWLObject ob : entity1o) {
                 Set<String> names = new HashSet<>();
@@ -181,6 +176,8 @@ public class SANOM extends DistanceAlignment implements AlignmentProcess {
                             if (s1HasNum && StringUtilsAM.ContrainNumber(s2)) {
                                 m = Math.max(m, StringUtilsAM.StringSetSimilarity(s1, s2));
                             }
+                            if(jDist != null)
+                                m = Math.max(m, jDist.computeSimilarity(s1, s2));
                         }
                     }
                     matrix[i][j] = m;

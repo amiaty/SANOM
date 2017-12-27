@@ -12,9 +12,7 @@
 
 package seals;
 
-import static am.StringUtilsAM.*;
 import am.SANOM;
-import com.hp.hpl.jena.sparql.util.StringUtils;
 import eu.sealsproject.platform.res.domain.omt.IOntologyMatchingToolBridge;
 import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
 import eu.sealsproject.platform.res.tool.api.ToolException;
@@ -107,6 +105,7 @@ public class MatcherBridge extends AbstractPlugin implements IOntologyMatchingTo
 			Properties properties = new Properties();
 			properties.put("objType", "class");
 			properties.put("nbIter", "2");
+			properties.put("useWordNet", "1");
 
             SANOM matcher = new SANOM();
             matcher.init(uri1, uri2);
