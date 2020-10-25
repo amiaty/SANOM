@@ -1,6 +1,6 @@
 # Simulated annealing-based ontology matching (SANOM)
 
-SANOM is the name of our system for ontology matching tasks which is also one of the participants registered in *Ontology Alignment Evaluation Initiative (OAEI)* Challenge form 2017 to 2019.
+SANOM is the name of our system for ontology matching tasks which is also one of the participants registered in the *Ontology Alignment Evaluation Initiative (OAEI)* Challenge form 2017 to 2019.
 
 ## Authors
 
@@ -9,7 +9,7 @@ SANOM is the name of our system for ontology matching tasks which is also one of
 
 # Help
 
-We suggest to use Intellij Idea as your IDE with Maven as your package manager
+We suggest using Intellij Idea as your IDE with Maven as your package manager
 
 ## Dependencies
 
