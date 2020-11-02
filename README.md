@@ -21,16 +21,16 @@ We suggest using Intellij Idea as your IDE with Maven as your package manager
 
 **cite** contains java implementation for the [paper](https://dl.acm.org/doi/abs/10.1145/3314948).  If you find this code useful in your research, please consider citing:
 
-@article{mohammadi2019simulated,
-  title={Simulated annealing-based ontology matching},
-  author={Mohammadi, Majid and Hofman, Wout and Tan, Yao-Hua},
-  journal={ACM Transactions on Management Information Systems (TMIS)},
-  volume={10},
-  number={1},
-  pages={1--24},
-  year={2019},
-  publisher={ACM New York, NY, USA}
-}
+    @article{mohammadi2019simulated,
+      title={Simulated annealing-based ontology matching},
+      author={Mohammadi, Majid and Hofman, Wout and Tan, Yao-Hua},
+      journal={ACM Transactions on Management Information Systems (TMIS)},
+      volume={10},
+      number={1},
+      pages={1--24},
+      year={2019},
+      publisher={ACM New York, NY, USA}
+    }
 
 ## Acknowledgments
 * [Ontology Alignment Evaluation Initiative (OAEI)](http://oaei.ontologymatching.org/)
